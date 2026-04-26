@@ -26,7 +26,6 @@
       width: 100%;
       max-width: 430px;
       height: 100vh;
-      max-height: 932px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -67,7 +66,6 @@
       position: relative;
       width: 100%;
       height: 100vh;
-      max-height: 932px;
       background: #0a1628;
       overflow: hidden;
     }
@@ -94,9 +92,9 @@
     /* Botón WhatsApp */
     .btn-whatsapp {
       position: absolute;
-      bottom: 55px;
+      bottom: 70px;
       left: 50%;
-      transform: translateX(-50%) scale(0.8);
+      transform: translateX(-50%) scale(0.85);
       z-index: 20;
       display: flex;
       align-items: center;
@@ -104,15 +102,15 @@
       background: linear-gradient(135deg, #25d366, #128c3e);
       color: #ffffff;
       text-decoration: none;
-      padding: 16px 36px;
+      padding: 18px 40px;
       border-radius: 50px;
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: 0.5px;
       box-shadow: 0 6px 30px rgba(37, 211, 102, 0.5);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transition: opacity 0.7s ease, transform 0.7s ease;
       white-space: nowrap;
     }
 
@@ -124,7 +122,7 @@
 
     .btn-whatsapp:hover {
       background: linear-gradient(135deg, #2be872, #15a348);
-      box-shadow: 0 8px 40px rgba(37, 211, 102, 0.7);
+      box-shadow: 0 8px 40px rgba(37, 211, 102, 0.75);
       transform: translateX(-50%) scale(1.05);
     }
 
@@ -132,33 +130,33 @@
       transform: translateX(-50%) scale(0.97);
     }
 
-    /* Icono WhatsApp SVG */
+    /* Icono WhatsApp */
     .wsp-icon {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       flex-shrink: 0;
     }
 
-    /* Pulse ring animado alrededor del botón */
+    /* Pulse ring animado */
     .btn-whatsapp::before {
       content: '';
       position: absolute;
-      inset: -4px;
+      inset: -5px;
       border-radius: 50px;
-      border: 2px solid rgba(37, 211, 102, 0.5);
+      border: 2px solid rgba(37, 211, 102, 0.55);
       animation: pulse-ring 1.8s ease-out infinite;
       opacity: 0;
     }
 
     @keyframes pulse-ring {
-      0%   { transform: scale(1);   opacity: 0.7; }
-      100% { transform: scale(1.12); opacity: 0; }
+      0%   { transform: scale(1);    opacity: 0.8; }
+      100% { transform: scale(1.14); opacity: 0;   }
     }
 
-    /* Texto debajo del botón */
+    /* Subtexto bajo el botón */
     .btn-hint {
       position: absolute;
-      bottom: 28px;
+      bottom: 44px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
@@ -166,7 +164,7 @@
       font-size: 11px;
       letter-spacing: 0.5px;
       opacity: 0;
-      transition: opacity 0.6s ease 0.3s;
+      transition: opacity 0.7s ease 0.4s;
       white-space: nowrap;
     }
 
@@ -174,67 +172,54 @@
       opacity: 1;
     }
 
-    /* Indicador de carga / play inicial */
-    .play-overlay {
+    /* Footer logo */
+    .footer-logo {
+      position: absolute;
+      bottom: 10px;
+      right: 14px;
+      z-index: 20;
+      color: rgba(255,255,255,0.22);
+      font-size: 9px;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* Pantalla de carga inicial */
+    #loadScreen {
       position: absolute;
       inset: 0;
-      z-index: 30;
+      z-index: 50;
+      background: #0a1628;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: rgba(10,22,40,0.82);
-      cursor: pointer;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.6s ease;
     }
 
-    .play-overlay.hidden {
+    #loadScreen.fade-out {
       opacity: 0;
       pointer-events: none;
     }
 
-    .play-circle {
-      width: 80px;
-      height: 80px;
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: #25d366;
       border-radius: 50%;
-      background: rgba(37, 211, 102, 0.15);
-      border: 2px solid #25d366;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      animation: spin 0.9s linear infinite;
       margin-bottom: 16px;
-      animation: pulse-play 2s ease-in-out infinite;
     }
 
-    @keyframes pulse-play {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.4); }
-      50%       { box-shadow: 0 0 0 18px rgba(37,211,102,0); }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
-    .play-circle svg {
-      width: 36px;
-      height: 36px;
-      fill: #25d366;
-      margin-left: 5px;
-    }
-
-    .play-overlay p {
-      color: #ffffff;
-      font-size: 14px;
+    #loadScreen p {
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
       letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    /* Logo hospital pie */
-    .footer-logo {
-      position: absolute;
-      bottom: 8px;
-      right: 14px;
-      z-index: 20;
-      color: rgba(255,255,255,0.25);
-      font-size: 9px;
-      text-align: right;
-      line-height: 1.4;
     }
   </style>
 </head>
@@ -249,24 +234,25 @@
       <p>Hospital Nacional Cayetano Heredia</p>
     </div>
 
-    <!-- Video -->
-    <video id="mainVideo" playsinline preload="auto">
+    <!-- Pantalla de carga -->
+    <div id="loadScreen">
+      <div class="spinner"></div>
+      <p>Cargando...</p>
+    </div>
+
+    <!-- Video: autoplay + muted para garantizar reproducción automática en móviles -->
+    <video
+      id="mainVideo"
+      autoplay
+      muted
+      playsinline
+      preload="auto"
+    >
       <source src="https://github.com/Dafon1981/recepcion_presentacion/raw/main/recepcion_v4_final.mp4" type="video/mp4" />
-      Tu navegador no soporta video HTML5.
     </video>
 
     <!-- Overlay degradado inferior -->
     <div class="overlay-bottom"></div>
-
-    <!-- Overlay de inicio (toca para reproducir) -->
-    <div class="play-overlay" id="playOverlay" onclick="startVideo()">
-      <div class="play-circle">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
-      </div>
-      <p>Toca para ver</p>
-    </div>
 
     <!-- Botón WhatsApp -->
     <a id="btnWsp"
@@ -274,17 +260,16 @@
        href="https://wa.me/51967188120?text=Estoy%20interesado%20en%20informaci%C3%B3n%20de%20recepci%C3%B3n%20de%20emergencia"
        target="_blank"
        rel="noopener noreferrer">
-      <!-- Icono WhatsApp -->
       <svg class="wsp-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#ffffff" d="M16 3C9.373 3 4 8.373 4 15c0 2.385.668 4.61 1.832 6.5L4 29l7.75-1.812A11.94 11.94 0 0 0 16 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10S21.523 25 16 25c-1.91 0-3.695-.536-5.215-1.465l-.37-.225-4.598 1.074 1.098-4.48-.238-.385A9.953 9.953 0 0 1 6 15c0-5.523 4.477-10 10-10zm-3.207 5.793c-.195 0-.512.073-.781.366-.27.293-1.024 1-.1024 2.44 0 1.44 1.047 2.83 1.193 3.025.146.196 2.05 3.13 4.977 4.266 2.465.973 2.928.78 3.457.73.53-.05 1.707-.696 1.95-1.367.243-.672.243-1.246.17-1.367-.073-.122-.269-.195-.562-.342-.293-.146-1.733-.855-2.002-.952-.268-.098-.463-.147-.658.147-.195.293-.757.952-.928 1.148-.17.195-.341.22-.634.073-.293-.147-1.236-.456-2.354-1.453-.87-.777-1.457-1.736-1.628-2.03-.17-.292-.018-.45.128-.596.13-.13.293-.342.44-.513.146-.17.195-.293.293-.488.097-.195.048-.366-.025-.513-.073-.146-.646-1.6-.9-2.19-.232-.55-.477-.487-.658-.487z"/>
+        <path fill="#ffffff" d="M16 3C9.373 3 4 8.373 4 15c0 2.385.668 4.61 1.832 6.5L4 29l7.75-1.812A11.94 11.94 0 0 0 16 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10S21.523 25 16 25c-1.91 0-3.695-.536-5.215-1.465l-.37-.225-4.598 1.074 1.098-4.48-.238-.385A9.953 9.953 0 0 1 6 15c0-5.523 4.477-10 10-10zm-3.207 5.793c-.195 0-.512.073-.781.366-.27.293-1.024 1-1.024 2.44 0 1.44 1.047 2.83 1.193 3.025.146.196 2.05 3.13 4.977 4.266 2.465.973 2.928.78 3.457.73.53-.05 1.707-.696 1.95-1.367.243-.672.243-1.246.17-1.367-.073-.122-.269-.195-.562-.342-.293-.146-1.733-.855-2.002-.952-.268-.098-.463-.147-.658.147-.195.293-.757.952-.928 1.148-.17.195-.341.22-.634.073-.293-.147-1.236-.456-2.354-1.453-.87-.777-1.457-1.736-1.628-2.03-.17-.292-.018-.45.128-.596.13-.13.293-.342.44-.513.146-.17.195-.293.293-.488.097-.195.048-.366-.025-.513-.073-.146-.646-1.6-.9-2.19-.232-.55-.477-.487-.658-.487z"/>
       </svg>
       Contacto
     </a>
 
-    <!-- Texto de ayuda bajo el botón -->
+    <!-- Subtexto -->
     <div class="btn-hint" id="btnHint">Escríbenos por WhatsApp</div>
 
-    <!-- Logo pie -->
+    <!-- Footer -->
     <div class="footer-logo">
       Hospital Nacional<br>Cayetano Heredia
     </div>
@@ -293,21 +278,31 @@
 </div>
 
 <script>
-  const video     = document.getElementById('mainVideo');
-  const overlay   = document.getElementById('playOverlay');
-  const btnWsp    = document.getElementById('btnWsp');
-  const btnHint   = document.getElementById('btnHint');
-  let   btnShown  = false;
+  const video      = document.getElementById('mainVideo');
+  const loadScreen = document.getElementById('loadScreen');
+  const btnWsp     = document.getElementById('btnWsp');
+  const btnHint    = document.getElementById('btnHint');
+  let   btnShown   = false;
 
-  function startVideo() {
-    video.play().then(() => {
-      overlay.classList.add('hidden');
-    }).catch(() => {
-      overlay.classList.add('hidden');
-    });
+  // ── Ocultar pantalla de carga cuando el video esté listo ──
+  function hideLoader() {
+    loadScreen.classList.add('fade-out');
+    setTimeout(() => loadScreen.style.display = 'none', 650);
   }
 
-  // Mostrar botón WhatsApp a partir del segundo 10
+  video.addEventListener('canplay', hideLoader);
+
+  // ── Activar sonido automáticamente en cuanto el usuario toca la pantalla ──
+  // (los navegadores móviles bloquean el audio hasta la primera interacción)
+  function unmuteOnce() {
+    video.muted = false;
+    document.removeEventListener('touchstart', unmuteOnce);
+    document.removeEventListener('click', unmuteOnce);
+  }
+  document.addEventListener('touchstart', unmuteOnce, { once: true });
+  document.addEventListener('click',      unmuteOnce, { once: true });
+
+  // ── Mostrar botón WhatsApp exactamente en el segundo 10 ──
   video.addEventListener('timeupdate', () => {
     if (!btnShown && video.currentTime >= 10) {
       btnShown = true;
@@ -316,14 +311,11 @@
     }
   });
 
-  // Intentar autoplay silencioso (por si el navegador lo permite)
-  video.muted = true;
-  video.play().then(() => {
-    video.muted = false;
-    overlay.classList.add('hidden');
-  }).catch(() => {
-    // Autoplay bloqueado → mostrar overlay de play
-    video.muted = false;
+  // ── Forzar reproducción automática ──
+  video.play().catch(() => {
+    // Si el autoplay falla, intentar de nuevo con muted
+    video.muted = true;
+    video.play().catch(() => {});
   });
 </script>
 
