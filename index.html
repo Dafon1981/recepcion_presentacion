@@ -1,119 +1,330 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat con la Base de Datos de Recepción</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .chat-container { width: 90%; max-width: 600px; height: 80vh; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1 ); display: flex; flex-direction: column; }
-        #chat-window { flex-grow: 1; overflow-y: auto; padding: 20px; }
-        .message { margin-bottom: 15px; padding: 10px 15px; border-radius: 18px; max-width: 80%; line-height: 1.4; }
-        .user-message { background-color: #007bff; color: white; align-self: flex-end; margin-left: auto; }
-        .ia-message { background-color: #e9e9eb; color: #333; align-self: flex-start; }
-        .error-message { background-color: #ffebee; color: #c62828; border: 1px solid #c62828; }
-        #input-area { display: flex; padding: 15px; border-top: 1px solid #ddd; }
-        #user-input { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; font-size: 16px; }
-        #send-button { background: #007bff; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; font-size: 20px; cursor: pointer; }
-        pre { background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Recepción de Emergencia de Seguros</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a1628;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      height: 100vh;
+      max-height: 932px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a1628;
+    }
+
+    /* Header */
+    .header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 18px 20px 12px;
+      background: linear-gradient(to bottom, rgba(10,22,40,0.95) 70%, transparent);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header p {
+      color: #7eb8e8;
+      font-size: 11px;
+      margin-top: 3px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Video wrapper */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      max-height: 932px;
+      background: #0a1628;
+      overflow: hidden;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Overlay degradado inferior */
+    .overlay-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 220px;
+      background: linear-gradient(to top, rgba(10,22,40,1) 30%, transparent);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Botón WhatsApp */
+    .btn-whatsapp {
+      position: absolute;
+      bottom: 55px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.8);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #25d366, #128c3e);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 16px 36px;
+      border-radius: 50px;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 6px 30px rgba(37, 211, 102, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      white-space: nowrap;
+    }
+
+    .btn-whatsapp.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .btn-whatsapp:hover {
+      background: linear-gradient(135deg, #2be872, #15a348);
+      box-shadow: 0 8px 40px rgba(37, 211, 102, 0.7);
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    .btn-whatsapp:active {
+      transform: translateX(-50%) scale(0.97);
+    }
+
+    /* Icono WhatsApp SVG */
+    .wsp-icon {
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    /* Pulse ring animado alrededor del botón */
+    .btn-whatsapp::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50px;
+      border: 2px solid rgba(37, 211, 102, 0.5);
+      animation: pulse-ring 1.8s ease-out infinite;
+      opacity: 0;
+    }
+
+    @keyframes pulse-ring {
+      0%   { transform: scale(1);   opacity: 0.7; }
+      100% { transform: scale(1.12); opacity: 0; }
+    }
+
+    /* Texto debajo del botón */
+    .btn-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      color: rgba(255,255,255,0.45);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      opacity: 0;
+      transition: opacity 0.6s ease 0.3s;
+      white-space: nowrap;
+    }
+
+    .btn-hint.visible {
+      opacity: 1;
+    }
+
+    /* Indicador de carga / play inicial */
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10,22,40,0.82);
+      cursor: pointer;
+      transition: opacity 0.4s ease;
+    }
+
+    .play-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .play-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(37, 211, 102, 0.15);
+      border: 2px solid #25d366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      animation: pulse-play 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-play {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.4); }
+      50%       { box-shadow: 0 0 0 18px rgba(37,211,102,0); }
+    }
+
+    .play-circle svg {
+      width: 36px;
+      height: 36px;
+      fill: #25d366;
+      margin-left: 5px;
+    }
+
+    .play-overlay p {
+      color: #ffffff;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Logo hospital pie */
+    .footer-logo {
+      position: absolute;
+      bottom: 8px;
+      right: 14px;
+      z-index: 20;
+      color: rgba(255,255,255,0.25);
+      font-size: 9px;
+      text-align: right;
+      line-height: 1.4;
+    }
+  </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <div id="chat-window">
-        <div class="message ia-message">Hola, soy tu asistente de base de datos. ¿Qué información necesitas de la tabla de registros?</div>
+<div class="container">
+  <div class="video-wrapper">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>Recepción de Emergencia</h1>
+      <p>Hospital Nacional Cayetano Heredia</p>
     </div>
-    <div id="input-area">
-        <input type="text" id="user-input" placeholder="Ej: busca al paciente Juan Perez...">
-        <button id="send-button">→</button>
+
+    <!-- Video -->
+    <video id="mainVideo" playsinline preload="auto">
+      <source src="https://github.com/Dafon1981/recepcion_presentacion/raw/main/recepcion_v4_final.mp4" type="video/mp4" />
+      Tu navegador no soporta video HTML5.
+    </video>
+
+    <!-- Overlay degradado inferior -->
+    <div class="overlay-bottom"></div>
+
+    <!-- Overlay de inicio (toca para reproducir) -->
+    <div class="play-overlay" id="playOverlay" onclick="startVideo()">
+      <div class="play-circle">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+      <p>Toca para ver</p>
     </div>
+
+    <!-- Botón WhatsApp -->
+    <a id="btnWsp"
+       class="btn-whatsapp"
+       href="https://wa.me/51967188120?text=Estoy%20interesado%20en%20informaci%C3%B3n%20de%20recepci%C3%B3n%20de%20emergencia"
+       target="_blank"
+       rel="noopener noreferrer">
+      <!-- Icono WhatsApp -->
+      <svg class="wsp-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ffffff" d="M16 3C9.373 3 4 8.373 4 15c0 2.385.668 4.61 1.832 6.5L4 29l7.75-1.812A11.94 11.94 0 0 0 16 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10S21.523 25 16 25c-1.91 0-3.695-.536-5.215-1.465l-.37-.225-4.598 1.074 1.098-4.48-.238-.385A9.953 9.953 0 0 1 6 15c0-5.523 4.477-10 10-10zm-3.207 5.793c-.195 0-.512.073-.781.366-.27.293-1.024 1-.1024 2.44 0 1.44 1.047 2.83 1.193 3.025.146.196 2.05 3.13 4.977 4.266 2.465.973 2.928.78 3.457.73.53-.05 1.707-.696 1.95-1.367.243-.672.243-1.246.17-1.367-.073-.122-.269-.195-.562-.342-.293-.146-1.733-.855-2.002-.952-.268-.098-.463-.147-.658.147-.195.293-.757.952-.928 1.148-.17.195-.341.22-.634.073-.293-.147-1.236-.456-2.354-1.453-.87-.777-1.457-1.736-1.628-2.03-.17-.292-.018-.45.128-.596.13-.13.293-.342.44-.513.146-.17.195-.293.293-.488.097-.195.048-.366-.025-.513-.073-.146-.646-1.6-.9-2.19-.232-.55-.477-.487-.658-.487z"/>
+      </svg>
+      Contacto
+    </a>
+
+    <!-- Texto de ayuda bajo el botón -->
+    <div class="btn-hint" id="btnHint">Escríbenos por WhatsApp</div>
+
+    <!-- Logo pie -->
+    <div class="footer-logo">
+      Hospital Nacional<br>Cayetano Heredia
+    </div>
+
+  </div>
 </div>
 
 <script>
-    // Tus claves de Supabase (¡estas son públicas y seguras de poner aquí!)
-    const supabaseUrl = 'https://esiklpxyectbekxvajnw.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzaWtscHh5ZWN0YmVreHZham53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2OTI1MjEsImV4cCI6MjA3NzI2ODUyMX0.mtQnqUrTmhmN1DQxOAUnGpizhYZobStHDH0cz_XfKGU';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey );
+  const video     = document.getElementById('mainVideo');
+  const overlay   = document.getElementById('playOverlay');
+  const btnWsp    = document.getElementById('btnWsp');
+  const btnHint   = document.getElementById('btnHint');
+  let   btnShown  = false;
 
-    const chatWindow = document.getElementById('chat-window');
-    const userInput = document.getElementById('user-input');
-    const sendButton = document.getElementById('send-button');
-
-    sendButton.addEventListener('click', handleUserMessage);
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleUserMessage();
-        }
+  function startVideo() {
+    video.play().then(() => {
+      overlay.classList.add('hidden');
+    }).catch(() => {
+      overlay.classList.add('hidden');
     });
+  }
 
-    function addMessage(text, type, isRawJson = false) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', type);
-        if (isRawJson) {
-            messageDiv.innerHTML = `<pre>${text}</pre>`;
-        } else {
-            messageDiv.textContent = text;
-        }
-        chatWindow.appendChild(messageDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+  // Mostrar botón WhatsApp a partir del segundo 10
+  video.addEventListener('timeupdate', () => {
+    if (!btnShown && video.currentTime >= 10) {
+      btnShown = true;
+      btnWsp.classList.add('visible');
+      btnHint.classList.add('visible');
     }
+  });
 
-    async function handleUserMessage() {
-        const pregunta = userInput.value.trim();
-        if (!pregunta) return;
-
-        addMessage(pregunta, 'user-message');
-        userInput.value = '';
-        addMessage('Pensando...', 'ia-message', false);
-
-        try {
-            // 1. Llamar a la Edge Function para que la IA convierta la pregunta en un plan JSON
-            const { data: plan, error: planError } = await supabase.functions.invoke('chat-con-ia', {
-                body: { pregunta },
-            });
-
-            if (planError) throw planError;
-            if (plan.error) throw new Error(plan.error);
-            
-            // Mostramos el plan que generó la IA (muy útil para depurar)
-            document.querySelector('.ia-message:last-child').remove(); // Quita el "Pensando..."
-            addMessage('Plan de la IA:\n' + JSON.stringify(plan, null, 2), 'ia-message', true);
-
-            // 2. Construir y ejecutar la consulta de Supabase basada en el plan de la IA
-            let query = supabase.from(plan.tabla).select(plan.columnas);
-
-            if (plan.filtros && plan.filtros.length > 0) {
-                plan.filtros.forEach(filtro => {
-                    query = query[filtro.operador](filtro.columna, filtro.valor);
-                });
-            }
-            
-            if (plan.accion === 'count') {
-                query = query.select('*', { count: 'exact', head: true });
-            }
-
-            const { data: resultados, error: dbError, count } = await query;
-
-            if (dbError) throw dbError;
-
-            // 3. Mostrar los resultados al usuario
-            if (plan.accion === 'count') {
-                addMessage(`Respuesta: Se encontraron ${count} registros.`, 'ia-message');
-            } else if (resultados.length === 0) {
-                addMessage('No encontré resultados para tu consulta.', 'ia-message');
-            } else {
-                const respuestaFormateada = 'Resultados:\n' + JSON.stringify(resultados, null, 2);
-                addMessage(respuestaFormateada, 'ia-message', true);
-            }
-
-        } catch (error) {
-            console.error('Error en el proceso:', error);
-            document.querySelector('.ia-message:last-child').remove(); // Quita el "Pensando..."
-            addMessage(`Error: ${error.message}`, 'error-message');
-        }
-    }
+  // Intentar autoplay silencioso (por si el navegador lo permite)
+  video.muted = true;
+  video.play().then(() => {
+    video.muted = false;
+    overlay.classList.add('hidden');
+  }).catch(() => {
+    // Autoplay bloqueado → mostrar overlay de play
+    video.muted = false;
+  });
 </script>
 
 </body>
