@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Recepción de Emergencia de Seguros</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background: #0a1628;
@@ -26,20 +22,152 @@
       width: 100%;
       max-width: 430px;
       height: 100vh;
+      background: #0a1628;
+      overflow: hidden;
+    }
+
+    /* ══════════════════════════════════
+       PANTALLA DE BIENVENIDA
+    ══════════════════════════════════ */
+    #welcomeScreen {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      background: linear-gradient(160deg, #0d1f3c 0%, #0a1628 60%, #051020 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #0a1628;
+      gap: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    #welcomeScreen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .welcome-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid rgba(37,211,102,0.5);
+      box-shadow: 0 0 30px rgba(37,211,102,0.2);
+      margin-bottom: 28px;
+    }
+
+    .welcome-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    .welcome-title {
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.25;
+      letter-spacing: 0.3px;
+      margin-bottom: 8px;
+      padding: 0 30px;
+    }
+
+    .welcome-subtitle {
+      color: #7eb8e8;
+      font-size: 12px;
+      text-align: center;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 50px;
+    }
+
+    /* Botón principal de inicio */
+    #btnStart {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #25d366, #128c3e);
+      color: #fff;
+      border: none;
+      padding: 18px 44px;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 6px 32px rgba(37,211,102,0.45);
+      position: relative;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #btnStart:active {
+      transform: scale(0.96);
+      box-shadow: 0 3px 16px rgba(37,211,102,0.3);
+    }
+
+    #btnStart::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50px;
+      border: 2px solid rgba(37,211,102,0.4);
+      animation: pulse-ring 2s ease-out infinite;
+    }
+
+    @keyframes pulse-ring {
+      0%   { transform: scale(1);    opacity: 0.8; }
+      100% { transform: scale(1.15); opacity: 0;   }
+    }
+
+    #btnStart svg {
+      width: 26px;
+      height: 26px;
+      fill: #fff;
+    }
+
+    .welcome-note {
+      margin-top: 22px;
+      color: rgba(255,255,255,0.3);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    /* Decoración fondo */
+    .deco-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,211,102,0.06), transparent 70%);
+      pointer-events: none;
+    }
+    .deco-circle.c1 { width: 320px; height: 320px; top: -80px;  right: -80px; }
+    .deco-circle.c2 { width: 260px; height: 260px; bottom: -60px; left: -60px; }
+
+    /* ══════════════════════════════════
+       PANTALLA DEL VIDEO
+    ══════════════════════════════════ */
+    #videoScreen {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
+    }
+
+    #videoScreen.visible {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     /* Header */
     .header {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
       padding: 18px 20px 12px;
       background: linear-gradient(to bottom, rgba(10,22,40,0.95) 70%, transparent);
       text-align: center;
@@ -61,15 +189,6 @@
       text-transform: uppercase;
     }
 
-    /* Video wrapper */
-    .video-wrapper {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      background: #0a1628;
-      overflow: hidden;
-    }
-
     video {
       width: 100%;
       height: 100%;
@@ -77,25 +196,23 @@
       display: block;
     }
 
-    /* Overlay degradado inferior */
+    /* Degradado inferior */
     .overlay-bottom {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: 220px;
       background: linear-gradient(to top, rgba(10,22,40,1) 30%, transparent);
       pointer-events: none;
-      z-index: 5;
+      z-index: 15;
     }
 
-    /* Botón WhatsApp */
+    /* ── Botón WhatsApp ── */
     .btn-whatsapp {
       position: absolute;
       bottom: 70px;
       left: 50%;
       transform: translateX(-50%) scale(0.85);
-      z-index: 20;
+      z-index: 25;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -107,7 +224,7 @@
       font-size: 18px;
       font-weight: 700;
       letter-spacing: 0.5px;
-      box-shadow: 0 6px 30px rgba(37, 211, 102, 0.5);
+      box-shadow: 0 6px 30px rgba(37,211,102,0.5);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.7s ease, transform 0.7s ease;
@@ -120,46 +237,27 @@
       transform: translateX(-50%) scale(1);
     }
 
-    .btn-whatsapp:hover {
-      background: linear-gradient(135deg, #2be872, #15a348);
-      box-shadow: 0 8px 40px rgba(37, 211, 102, 0.75);
-      transform: translateX(-50%) scale(1.05);
-    }
+    .btn-whatsapp:hover  { background: linear-gradient(135deg,#2be872,#15a348); transform: translateX(-50%) scale(1.05); }
+    .btn-whatsapp:active { transform: translateX(-50%) scale(0.97); }
 
-    .btn-whatsapp:active {
-      transform: translateX(-50%) scale(0.97);
-    }
+    .wsp-icon { width: 28px; height: 28px; flex-shrink: 0; }
 
-    /* Icono WhatsApp */
-    .wsp-icon {
-      width: 28px;
-      height: 28px;
-      flex-shrink: 0;
-    }
-
-    /* Pulse ring animado */
     .btn-whatsapp::before {
       content: '';
       position: absolute;
       inset: -5px;
       border-radius: 50px;
-      border: 2px solid rgba(37, 211, 102, 0.55);
+      border: 2px solid rgba(37,211,102,0.55);
       animation: pulse-ring 1.8s ease-out infinite;
       opacity: 0;
     }
 
-    @keyframes pulse-ring {
-      0%   { transform: scale(1);    opacity: 0.8; }
-      100% { transform: scale(1.14); opacity: 0;   }
-    }
-
-    /* Subtexto bajo el botón */
     .btn-hint {
       position: absolute;
       bottom: 44px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 20;
+      z-index: 25;
       color: rgba(255,255,255,0.45);
       font-size: 11px;
       letter-spacing: 0.5px;
@@ -168,90 +266,59 @@
       white-space: nowrap;
     }
 
-    .btn-hint.visible {
-      opacity: 1;
-    }
+    .btn-hint.visible { opacity: 1; }
 
-    /* Footer logo */
     .footer-logo {
       position: absolute;
-      bottom: 10px;
-      right: 14px;
-      z-index: 20;
+      bottom: 10px; right: 14px;
+      z-index: 25;
       color: rgba(255,255,255,0.22);
       font-size: 9px;
       text-align: right;
       line-height: 1.4;
-    }
-
-    /* Pantalla de carga inicial */
-    #loadScreen {
-      position: absolute;
-      inset: 0;
-      z-index: 50;
-      background: #0a1628;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.6s ease;
-    }
-
-    #loadScreen.fade-out {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid rgba(255,255,255,0.1);
-      border-top-color: #25d366;
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
-      margin-bottom: 16px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    #loadScreen p {
-      color: rgba(255,255,255,0.5);
-      font-size: 13px;
-      letter-spacing: 1px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="video-wrapper">
 
-    <!-- Header -->
+  <!-- ══ PANTALLA DE BIENVENIDA ══ -->
+  <div id="welcomeScreen">
+    <div class="deco-circle c1"></div>
+    <div class="deco-circle c2"></div>
+
+    <div class="welcome-logo">
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663032378890/ZuhIXkjLibTszlJX.png" alt="Recepcionista" />
+    </div>
+
+    <div class="welcome-title">Recepción de<br>Emergencia de Seguros</div>
+    <div class="welcome-subtitle">Hospital Nacional Cayetano Heredia</div>
+
+    <button id="btnStart" onclick="startPresentation()">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      Ver presentación
+    </button>
+
+    <p class="welcome-note">Toca para iniciar con audio</p>
+  </div>
+
+  <!-- ══ PANTALLA DEL VIDEO ══ -->
+  <div id="videoScreen">
+
     <div class="header">
       <h1>Recepción de Emergencia</h1>
       <p>Hospital Nacional Cayetano Heredia</p>
     </div>
 
-    <!-- Pantalla de carga -->
-    <div id="loadScreen">
-      <div class="spinner"></div>
-      <p>Cargando...</p>
-    </div>
-
-    <!-- Video: autoplay + muted para garantizar reproducción automática en móviles -->
     <video
       id="mainVideo"
-      autoplay
-      muted
       playsinline
       preload="auto"
     >
       <source src="https://github.com/Dafon1981/recepcion_presentacion/raw/main/recepcion_v4_final.mp4" type="video/mp4" />
     </video>
 
-    <!-- Overlay degradado inferior -->
     <div class="overlay-bottom"></div>
 
     <!-- Botón WhatsApp -->
@@ -266,56 +333,45 @@
       Contacto
     </a>
 
-    <!-- Subtexto -->
     <div class="btn-hint" id="btnHint">Escríbenos por WhatsApp</div>
 
-    <!-- Footer -->
-    <div class="footer-logo">
-      Hospital Nacional<br>Cayetano Heredia
-    </div>
+    <div class="footer-logo">Hospital Nacional<br>Cayetano Heredia</div>
 
   </div>
 </div>
 
 <script>
-  const video      = document.getElementById('mainVideo');
-  const loadScreen = document.getElementById('loadScreen');
-  const btnWsp     = document.getElementById('btnWsp');
-  const btnHint    = document.getElementById('btnHint');
-  let   btnShown   = false;
+  const video       = document.getElementById('mainVideo');
+  const welcome     = document.getElementById('welcomeScreen');
+  const videoScreen = document.getElementById('videoScreen');
+  const btnWsp      = document.getElementById('btnWsp');
+  const btnHint     = document.getElementById('btnHint');
+  let   btnShown    = false;
 
-  // ── Ocultar pantalla de carga cuando el video esté listo ──
-  function hideLoader() {
-    loadScreen.classList.add('fade-out');
-    setTimeout(() => loadScreen.style.display = 'none', 650);
-  }
+  function startPresentation() {
+    // 1. Mostrar pantalla de video
+    videoScreen.classList.add('visible');
 
-  video.addEventListener('canplay', hideLoader);
-
-  // ── Activar sonido automáticamente en cuanto el usuario toca la pantalla ──
-  // (los navegadores móviles bloquean el audio hasta la primera interacción)
-  function unmuteOnce() {
+    // 2. Reproducir con audio (el usuario ya interactuó → permitido)
     video.muted = false;
-    document.removeEventListener('touchstart', unmuteOnce);
-    document.removeEventListener('click', unmuteOnce);
-  }
-  document.addEventListener('touchstart', unmuteOnce, { once: true });
-  document.addEventListener('click',      unmuteOnce, { once: true });
+    video.play().catch(() => {
+      // Fallback: si falla, intentar con muted
+      video.muted = true;
+      video.play();
+    });
 
-  // ── Mostrar botón WhatsApp exactamente en el segundo 10 ──
+    // 3. Ocultar pantalla de bienvenida con fade
+    welcome.classList.add('fade-out');
+    setTimeout(() => welcome.style.display = 'none', 650);
+  }
+
+  // Mostrar botón WhatsApp en el segundo 10
   video.addEventListener('timeupdate', () => {
     if (!btnShown && video.currentTime >= 10) {
       btnShown = true;
       btnWsp.classList.add('visible');
       btnHint.classList.add('visible');
     }
-  });
-
-  // ── Forzar reproducción automática ──
-  video.play().catch(() => {
-    // Si el autoplay falla, intentar de nuevo con muted
-    video.muted = true;
-    video.play().catch(() => {});
   });
 </script>
 
